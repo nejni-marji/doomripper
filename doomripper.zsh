@@ -49,19 +49,11 @@ rip_and_tag() {
 		[[ $? -ne 0 ]] && return 1
 	fi
 
-	# CACHE FINAL AUDIO
+	# TAG AUDIO
 	# this has to be in an array or the star is taken as a literal
 	raw_file=($CACHE/raw/"$id".*)
 	out_file=$CACHE/output/${prefix}_"$id".ogg
-	if ! [[ -e $out_file ]] ; then
-		ffmpeg -i $raw_file -c:a copy $out_file
-	fi
-	echo $out_file
-
-	# TAG OUTPUT AUDIO
-	mv $out_file $out_file.tmp
-	yes | ffmpeg \
-		-i $out_file.tmp \
+	ffmpeg -i $raw_file \
 		-c:a copy \
 		-metadata TITLE=$tag_data[1] \
 		-metadata ARTIST=$tag_data[2] \
@@ -70,7 +62,7 @@ rip_and_tag() {
 		-metadata TRACKNUMBER=$count \
 		-metadata album_artist='ytrip' \
 		$out_file
-	rm $out_file.tmp
+	echo $out_file
 }
 
 
