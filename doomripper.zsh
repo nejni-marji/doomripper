@@ -59,31 +59,18 @@ rip_and_tag() {
 	echo $out_file
 
 	# TAG OUTPUT AUDIO
-	false && {
-	id3tag \
-		--song=$tag_data[1] \
-		--artist=$tag_data[2] \
-		--comment=$tag_data[3] \
-		--album=$album \
-		--track=$count \
-		--total=$total \
+	mv $out_file $out_file.tmp
+	yes | ffmpeg \
+		-i $out_file.tmp \
+		-c:a copy \
+		-metadata TITLE=$tag_data[1] \
+		-metadata ARTIST=$tag_data[2] \
+		-metadata ALBUM=$album \
+		-metadata DESCRIPTION=$tag_data[3] \
+		-metadata TRACKNUMBER=$count \
+		-metadata album_artist='ytrip' \
 		$out_file
-	}
-	true && {
-		mv $out_file $out_file.tmp
-		yes | ffmpeg \
-			-i $out_file.tmp \
-			-c:a copy \
-			-metadata TITLE=$tag_data[1] \
-			-metadata ARTIST=$tag_data[2] \
-			-metadata ALBUM=$album \
-			-metadata DESCRIPTION=$tag_data[3] \
-			-metadata TRACKNUMBER=$count \
-			-metadata album_artist='ytrip' \
-			$out_file
-		rm $out_file.tmp
-	}
-	# see header for details on this
+	rm $out_file.tmp
 }
 
 
